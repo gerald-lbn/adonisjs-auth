@@ -22,10 +22,6 @@ export default function LoginScreen() {
     <div>
       <h1>Login</h1>
 
-      <pre>
-        <code>{JSON.stringify(form, null, 2)}</code>
-      </pre>
-
       <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="email">Email</label>

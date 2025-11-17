@@ -24,10 +24,6 @@ export default function RegisterScreen() {
     <div>
       <h1>Register</h1>
 
-      <pre>
-        <code>{JSON.stringify(form, null, 2)}</code>
-      </pre>
-
       <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="fullName">Full Name</label>
