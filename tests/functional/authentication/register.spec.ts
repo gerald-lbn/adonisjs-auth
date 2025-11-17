@@ -77,27 +77,6 @@ test.group('Authentication register', (group) => {
     assert.isEmpty(users)
   })
 
-  test('fails if password and password confirmation do not match', async ({
-    assert,
-    client,
-    route,
-  }) => {
-    const user = await UserFactoryWithStrongPassword.make()
-
-    await client
-      .post(route('register.handle'))
-      .form({
-        fullName: user.fullName,
-        email: user.email,
-        password: user.password,
-        passwordConfirmation: 'wrong',
-      })
-      .withCsrfToken()
-
-    const users = await User.all()
-    assert.isEmpty(users)
-  })
-
   test('succeeds when full name, email and password are valid', async ({
     assert,
     client,
@@ -111,7 +90,6 @@ test.group('Authentication register', (group) => {
         fullName: user.fullName,
         email: user.email,
         password: user.password,
-        passwordConfirmation: user.password,
       })
       .withCsrfToken()
 

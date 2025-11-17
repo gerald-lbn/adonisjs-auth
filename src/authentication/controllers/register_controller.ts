@@ -12,9 +12,7 @@ export default class RegisterController {
     vine.object({
       fullName: vine.string().minLength(2).maxLength(32).trim(),
       email: vine.string().email().unique(unique('users', 'email')).trim(),
-      password: vine.string().minLength(8).confirmed({
-        confirmationField: 'passwordConfirmation',
-      }),
+      password: vine.string().minLength(8),
     })
   )
 
