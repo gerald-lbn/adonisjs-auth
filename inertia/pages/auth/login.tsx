@@ -1,4 +1,7 @@
-import { useForm } from '@inertiajs/react'
+import { Head, useForm } from '@inertiajs/react'
+import { Button } from '~/components/base/buttons/button'
+import { Input } from '~/components/base/input/input'
+import AuthLayout from '~/layouts/auth_layout'
 
 export default function LoginScreen() {
   const form = useForm({
@@ -11,37 +14,50 @@ export default function LoginScreen() {
     form.post('/login')
   }
 
-  const onFormFieldChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    name: keyof typeof form.data
-  ) => {
-    form.setData(name, e.target.value)
+  const onFormFieldChange = (value: string, name: keyof typeof form.data) => {
+    form.setData(name, value)
   }
 
   return (
-    <div>
-      <h1>Login</h1>
+    <>
+      <Head title="Log in" />
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="email">Email</label>
-          <input required type="email" id="email" onChange={(e) => onFormFieldChange(e, 'email')} />
-          {form.errors.email && <p>{form.errors.email}</p>}
-        </div>
+      <AuthLayout
+        heading="Log in to your account"
+        subheading="Welcome back! Please enter your details"
+      >
+        <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+          <div className="flex flex-col gap-5">
+            <Input
+              isRequired
+              label="Email"
+              type="email"
+              placeholder="Enter your email"
+              isInvalid={!!form.errors.email}
+              hint={form.errors.email}
+              size="md"
+              value={form.data.email}
+              onChange={(v) => onFormFieldChange(v, 'email')}
+            />
 
-        <div>
-          <label htmlFor="password">Password</label>
-          <input
-            required
-            type="password"
-            id="password"
-            onChange={(e) => onFormFieldChange(e, 'password')}
-          />
-          {form.errors.password && <p>{form.errors.password}</p>}
-        </div>
+            <Input
+              isRequired
+              label="Password"
+              type="password"
+              placeholder="Enter you password"
+              isInvalid={!!form.errors.password}
+              hint={form.errors.password}
+              size="md"
+              value={form.data.password}
+              onChange={(v) => onFormFieldChange(v, 'password')}
+            />
+          </div>
 
-        <button type="submit">Register</button>
-      </form>
-    </div>
+          <Button size="lg" type="submit" isDisabled={form.processing}>
+            {form.processing ? 'Loading' : 'Sign in'}
+          </Button>
+        </form>
+      </AuthLayout>
+    </>
   )
 }

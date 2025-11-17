@@ -1,11 +1,13 @@
-import { useForm } from '@inertiajs/react'
+import { Head, useForm } from '@inertiajs/react'
+import { Button } from '~/components/base/buttons/button'
+import { Input } from '~/components/base/input/input'
+import AuthLayout from '~/layouts/auth_layout'
 
 export default function RegisterScreen() {
   const form = useForm({
     fullName: '',
     email: '',
     password: '',
-    passwordConfirmation: '',
   })
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -13,60 +15,58 @@ export default function RegisterScreen() {
     form.post('/register')
   }
 
-  const onFormFieldChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    name: keyof typeof form.data
-  ) => {
-    form.setData(name, e.target.value)
+  const onFormFieldChange = (value: string, name: keyof typeof form.data) => {
+    form.setData(name, value)
   }
 
   return (
-    <div>
-      <h1>Register</h1>
+    <>
+      <Head title="Sign up" />
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="fullName">Full Name</label>
-          <input
-            required
-            type="text"
-            id="fullName"
-            value={form.data.fullName}
-            onChange={(e) => onFormFieldChange(e, 'fullName')}
-          />
-          {form.errors.fullName && <p>{form.errors.fullName}</p>}
-        </div>
+      <AuthLayout heading="Sign up" subheading="To get started, create an account">
+        <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+          <div className="flex flex-col gap-5">
+            <Input
+              isRequired
+              label="Fullname"
+              placeholder="Enter your fullname"
+              isInvalid={!!form.errors.fullName}
+              hint={form.errors.fullName}
+              size="md"
+              value={form.data.fullName}
+              onChange={(v) => onFormFieldChange(v, 'fullName')}
+            />
 
-        <div>
-          <label htmlFor="email">Email</label>
-          <input required type="email" id="email" onChange={(e) => onFormFieldChange(e, 'email')} />
-          {form.errors.email && <p>{form.errors.email}</p>}
-        </div>
+            <Input
+              isRequired
+              label="Email"
+              type="email"
+              placeholder="Enter your email"
+              isInvalid={!!form.errors.email}
+              hint={form.errors.email}
+              size="md"
+              value={form.data.email}
+              onChange={(v) => onFormFieldChange(v, 'email')}
+            />
 
-        <div>
-          <label htmlFor="password">Password</label>
-          <input
-            required
-            type="password"
-            id="password"
-            onChange={(e) => onFormFieldChange(e, 'password')}
-          />
-          {form.errors.password && <p>{form.errors.password}</p>}
-        </div>
+            <Input
+              isRequired
+              label="Password"
+              type="password"
+              placeholder="Enter you password"
+              isInvalid={!!form.errors.password}
+              hint={form.errors.password ?? 'Must be at least 8 characters'}
+              size="md"
+              value={form.data.password}
+              onChange={(v) => onFormFieldChange(v, 'password')}
+            />
+          </div>
 
-        <div>
-          <label htmlFor="passwordConfirmation">Confirm Password</label>
-          <input
-            required
-            type="password"
-            id="passwordConfirmation"
-            onChange={(e) => onFormFieldChange(e, 'passwordConfirmation')}
-          />
-          {form.errors.passwordConfirmation && <p>{form.errors.passwordConfirmation}</p>}
-        </div>
-
-        <button type="submit">Register</button>
-      </form>
-    </div>
+          <Button size="lg" type="submit" isDisabled={form.processing}>
+            {form.processing ? 'Loading' : 'Get started'}
+          </Button>
+        </form>
+      </AuthLayout>
+    </>
   )
 }
