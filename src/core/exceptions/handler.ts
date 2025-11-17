@@ -1,5 +1,6 @@
+import { errors } from '@adonisjs/auth'
+import { ExceptionHandler, HttpContext } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
-import { HttpContext, ExceptionHandler } from '@adonisjs/core/http'
 import type { StatusPageRange, StatusPageRenderer } from '@adonisjs/core/types/http'
 
 export default class HttpExceptionHandler extends ExceptionHandler {
@@ -30,6 +31,9 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * response to the client
    */
   async handle(error: unknown, ctx: HttpContext) {
+    if (error instanceof errors.E_INVALID_CREDENTIALS) {
+      return ctx.response.status(error.status).send(error.getResponseMessage(error, ctx))
+    }
     return super.handle(error, ctx)
   }
 
