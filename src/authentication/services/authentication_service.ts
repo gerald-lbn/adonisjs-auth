@@ -1,3 +1,4 @@
+import OtpRepository from '#authentication/repositories/otp_repository'
 import UserRepository from '#authentication/repositories/user_repository'
 import { inject } from '@adonisjs/core'
 import { HttpContext } from '@adonisjs/core/http'
@@ -6,7 +7,8 @@ import { HttpContext } from '@adonisjs/core/http'
 export default class AuthenticationService {
   constructor(
     protected ctx: HttpContext,
-    private userRepository: UserRepository
+    private userRepository: UserRepository,
+    private otpRepository: OtpRepository
   ) {}
 
   /**
@@ -17,6 +19,8 @@ export default class AuthenticationService {
    */
   async register(fullName: string, email: string, password: string): Promise<void> {
     const user = await this.userRepository.create(fullName, email, password)
+    await this.otpRepository.create(user.id)
+
     await this.ctx.auth.use('web').login(user)
   }
 
@@ -50,5 +54,22 @@ export default class AuthenticationService {
       }
       return this.ctx.response.redirect().back()
     }
+  }
+
+  async verifyAccount(code: string): Promise<void> {
+    const user = this.ctx.auth.user
+    if (!user) {
+      return this.ctx.response.redirect().toRoute('register.render')
+    }
+
+    const verified = await this.otpRepository.verify(user.id, code)
+    if (verified) {
+      return this.ctx.response.redirect().toRoute('home.render')
+    }
+
+    this.ctx.session.flashErrors({
+      code: 'Wrong verification code',
+    })
+    return this.ctx.response.redirect().toRoute('verify-account.render')
   }
 }
