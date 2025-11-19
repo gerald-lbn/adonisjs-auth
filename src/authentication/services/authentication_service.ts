@@ -22,6 +22,7 @@ export default class AuthenticationService {
     await this.otpRepository.create(user.id)
 
     await this.ctx.auth.use('web').login(user)
+    return this.ctx.response.redirect().toRoute('verify-account.render')
   }
 
   /**
