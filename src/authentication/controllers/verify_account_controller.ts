@@ -9,7 +9,10 @@ export default class LoginController {
   /**
    * Renders the login form
    */
-  render({ inertia }: HttpContext) {
+  render({ auth, inertia, response }: HttpContext) {
+    if (auth.user?.isVerified) {
+      return response.redirect().toRoute('home.render')
+    }
     return inertia.render('auth/verify_account')
   }
 
