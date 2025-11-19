@@ -24,4 +24,12 @@ export default class OtpRepository {
     const [otp] = await Otp.query().where('user_id', userId).where('code', code).limit(1)
     return !!otp
   }
+
+  /**
+   * Delete otp generated for the user
+   * @param userId the user whose OTPs you want to delete
+   */
+  async delete(userId: number): Promise<void> {
+    await Otp.query().where('user_id', userId).delete()
+  }
 }
