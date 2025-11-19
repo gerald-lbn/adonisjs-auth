@@ -2,6 +2,7 @@ import OtpRepository from '#authentication/repositories/otp_repository'
 import UserRepository from '#authentication/repositories/user_repository'
 import { inject } from '@adonisjs/core'
 import { HttpContext } from '@adonisjs/core/http'
+import mail from '@adonisjs/mail/services/main'
 
 @inject()
 export default class AuthenticationService {
@@ -19,7 +20,15 @@ export default class AuthenticationService {
    */
   async register(fullName: string, email: string, password: string): Promise<void> {
     const user = await this.userRepository.create(fullName, email, password)
-    await this.otpRepository.create(user.id)
+    const otp = await this.otpRepository.create(user.id)
+
+    await mail.send((msg) => {
+      msg
+        .to(user.email)
+        .from('info@alexandrie.app')
+        .subject('Verify your email address')
+        .htmlView('emails/verify_email', { user, otp })
+    })
 
     await this.ctx.auth.use('web').login(user)
     return this.ctx.response.redirect().toRoute('verify-account.render')
@@ -75,6 +84,13 @@ export default class AuthenticationService {
           isVerified: true,
         })
         .save()
+      await mail.send((msg) => {
+        msg
+          .to(user.email)
+          .from('info@alexandrie.app')
+          .subject('Your account is verified')
+          .htmlView('emails/verified_email', { user })
+      })
       await this.ctx.auth.use('web').login(user)
       return this.ctx.response.redirect().toRoute('home.render')
     }
