@@ -10,5 +10,12 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_DATABASE}
 
+  mailer:
+    image: axllent/mailpit
+    ports:
+      - 1025:1025
+      - 8025:8025
+    restart: unless-stopped
+
 volumes:
   postgres-data:
