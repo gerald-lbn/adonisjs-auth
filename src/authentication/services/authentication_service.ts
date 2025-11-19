@@ -57,6 +57,10 @@ export default class AuthenticationService {
     }
   }
 
+  /**
+   * Verify the user input otp against the database
+   * @param code the otp input by the user
+   */
   async verifyAccount(code: string): Promise<void> {
     const user = this.ctx.auth.user
     if (!user) {
@@ -65,6 +69,12 @@ export default class AuthenticationService {
 
     const verified = await this.otpRepository.verify(user.id, code)
     if (verified) {
+      this.otpRepository.delete(user.id)
+      await user
+        .merge({
+          isVerified: true,
+        })
+        .save()
       return this.ctx.response.redirect().toRoute('home.render')
     }
 
