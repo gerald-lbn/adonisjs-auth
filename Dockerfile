@@ -18,6 +18,10 @@ RUN node ace build
 
 FROM base AS production
 ENV NODE_ENV=production
+ENV SESSION_DRIVER=cookie
+ENV PORT=3334
+ENV HOST=0.0.0.0
+EXPOSE 3334
 WORKDIR /app
 COPY --from=production-deps /app/node_modules /app/node_modules
 COPY --from=build /app/build /app
