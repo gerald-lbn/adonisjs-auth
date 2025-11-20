@@ -46,7 +46,7 @@ docker compose up -d
 Once the containers are up and running, access the app in your browser at
 
 ```
-http://localhost:
+http://localhost:3334
 ```
 
 ### Development
